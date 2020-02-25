@@ -32,3 +32,25 @@ test("Clicks on Dropdown menu and loads episodes ", async () => {
   userEvent.click(season);
   expect(queryAllByTestId("episode")).toHaveLength(8);
 });
+test("Changes seasons from one to another", async () => {
+  mockFetchShow.mockResolvedValueOnce(showData);
+  const {
+    queryAllByText,
+    getAllByText,
+    queryByText,
+    getByText,
+    queryAllByTestId
+  } = render(<App />);
+  await wait(() => {});
+  expect(queryAllByTestId("episode")).toHaveLength(0);
+  userEvent.click(queryByText(/select a season/i));
+  const season1 = getByText(/season 1/i);
+  userEvent.click(season1);
+  expect(queryAllByTestId("episode")).toHaveLength(8);
+  expect(getAllByText(/\b1\b.*\bepisode\b/i)).toHaveLength(8);
+  userEvent.click(queryByText(/^season 1$/i));
+  const season2 = getByText(/season 2/i);
+  userEvent.click(season2);
+  expect(queryAllByText(/\b1\b.*\bepisode\b/i)).toHaveLength(0);
+  expect(getAllByText(/\b2\b.*\bepisode\b/i)).toHaveLength(9);
+});
