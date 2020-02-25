@@ -7,7 +7,7 @@ import { formatSeasons } from "./utils/formatSeasons";
 
 import Episodes from "./components/Episodes";
 import "./styles.css";
-import fetchShow from "./api/fetchShow";
+import { fetchShow } from "./api/fetchShow";
 
 export default function App() {
   const [show, setShow] = useState(null);
@@ -16,12 +16,14 @@ export default function App() {
   const episodes = seasons[selectedSeason] || [];
 
   useEffect(() => {
-    const fetchByApi = async () => {
-      const response = await fetchShow();
-      setShow(response);
-      setSeasons(formatSeasons(response._embedded.episodes));
-    };
-    fetchByApi();
+    fetchShow()
+      .then((response) => {
+        setShow(response);
+        setSeasons(formatSeasons(response._embedded.episodes));
+      })
+      .catch((response) => {
+        console.log(response);
+      });
   }, []);
 
   const handleSelect = (e) => {
@@ -31,7 +33,7 @@ export default function App() {
   if (!show) {
     return <h2>Fetching data...</h2>;
   }
-  console.log(show);
+
   return (
     <div className="App">
       {!seasons ? (
@@ -43,7 +45,7 @@ export default function App() {
             src={show.image.original}
             alt={show.name}
           />
-          <h1>{show.name}</h1>
+          <h1 data-testid="title">{show.name}</h1>
           {parse(show.summary)}
           <Dropdown
             options={Object.keys(seasons)}

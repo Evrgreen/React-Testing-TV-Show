@@ -1,11 +1,15 @@
 import axios from "axios";
 
-const fetchShow = async () => {
-  const response = await axios.get(
-    "https://api.tvmaze.com/singlesearch/shows?q=stranger-things&embed=episodes"
-  );
-
-  return response.data;
+export const fetchShow = () => {
+  return axios
+    .get(
+      "https://api.tvmaze.com/singlesearch/shows?q=stranger-things&embed=episodes"
+    )
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      console.log(`encountered error, error:`, error.message);
+      return error;
+    });
 };
-
-export default fetchShow;
